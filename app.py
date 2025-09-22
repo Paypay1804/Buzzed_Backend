@@ -25,3 +25,4 @@ def get_all_ingredients():
     return {"ingredients": sorted(unique_ingredients)}
 
 print("✅ FastAPI started with ingredients endpoint loaded")
+
