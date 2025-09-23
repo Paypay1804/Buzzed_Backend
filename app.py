@@ -3,9 +3,14 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from smart_bar_menu import match_drinks
 
 app = FastAPI()
+
+try:
+    from smart_bar_menu import match_drinks
+    from drinks_db import DRINKS
+except Exception as e:
+    print("❌ Import failed:", e)
 
 class IngredientsRequest(BaseModel):
     ingredients: List[str]
@@ -13,8 +18,6 @@ class IngredientsRequest(BaseModel):
 @app.post("/match")
 def get_drink_matches(request: IngredientsRequest):
     return match_drinks(request.ingredients)
-
-from drinks_db import DRINKS
 
 @app.get("/ingredients")
 def get_all_ingredients():
@@ -24,5 +27,6 @@ def get_all_ingredients():
             unique_ingredients.add(ing.lower().strip())
     return {"ingredients": sorted(unique_ingredients)}
 
-print("✅ FastAPI started with ingredients endpoint loaded")
-
+@app.on_event("startup")
+async def startup_event():
+    print("🚦 Registered routes:", [route.path for route in app.router.routes])
