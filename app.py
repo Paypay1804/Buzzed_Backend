@@ -21,11 +21,29 @@ def get_drink_matches(request: IngredientsRequest):
 
 @app.get("/ingredients")
 def get_all_ingredients():
+    alcohols = {"vodka", "gin", "rum", "tequila", "whiskey", "bourbon", "brandy", "scotch", "cognac", "amaretto", "aperol", "campari", "vermouth", "liqueur"}
+    fruits = {"lemon", "lime", "orange", "cherry", "pineapple", "grapefruit", "mint", "raspberry"}
+    mixers = {"juice", "soda", "beer", "cola", "syrup", "tonic", "coffee", "cream", "water", "honey"}
+    
+    categories = {"Alcohol": [], "Fruit": [], "Mixer": [], "Misc": []}
     unique_ingredients = set()
+
     for drink in DRINKS:
         for ing in drink["ingredients"]:
-            unique_ingredients.add(ing.lower().strip())
-    return {"ingredients": sorted(unique_ingredients)}
+            clean = ing.lower().strip()
+            if clean not in unique_ingredients:
+                unique_ingredients.add(clean)
+                # Categorize
+                if any(word in clean for word in alcohols):
+                    categories["Alcohol"].append(ing)
+                elif any(word in clean for word in fruits):
+                    categories["Fruit"].append(ing)
+                elif any(word in clean for word in mixers):
+                    categories["Mixer"].append(ing)
+                else:
+                    categories["Misc"].append(ing)
+
+    return {"categories": categories}
 
 @app.on_event("startup")
 async def startup_event():
