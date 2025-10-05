@@ -36,6 +36,8 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
     can_make = []
     missing_one = []
     missing_two = []
+    missing_three=[]
+    missing_four=[]
     substitute_drinks = []
     all_missing_ingredients = Counter()
 
@@ -66,13 +68,21 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                 normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
                 all_missing_ingredients[normalized] += 1
         elif len(missing) == 2:
-            # NEW: only count each missing ingredient if the other one is already in inventory
             missing_two.append({"name": drink["name"], "missing": missing})
             for ing in missing:
-                other = [m for m in missing if m != ing][0]  # the other missing one
-                if other in user_ingredients or any(s in user_ingredients for s in LIQUOR_SUBSTITUTIONS.get(other, [])):
-                    normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
-                    all_missing_ingredients[normalized] += 1
+                normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
+                all_missing_ingredients[normalized] += 1
+        elif len(missing) == 3:
+            missing_three.append({"name": drink["name"], "missing": missing})
+            for ing in missing:
+                normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
+                all_missing_ingredients[normalized] += 1
+        elif len(missing) == 4:
+            missing_four.append({"name": drink["name"], "missing": missing})
+            for ing in missing:
+                normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
+                all_missing_ingredients[normalized] += 1
+
 
     high_impact = [{"ingredient": ing, "unlocks": count} for ing, count in all_missing_ingredients.most_common(5)]
 
@@ -81,5 +91,8 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
         "substitute_drinks": substitute_drinks,
         "missing_one": missing_one,
         "missing_two": missing_two,
+        "missing_three": missing_three,
+        "missing_four": missing_four,
         "high_impact_ingredients": high_impact
-    }
+}
+
