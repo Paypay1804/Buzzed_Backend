@@ -19,11 +19,6 @@ class IngredientsRequest(BaseModel):
 def get_drink_matches(request: IngredientsRequest):
     return match_drinks(request.ingredients)
 
-@app.get("/high_impact")
-def get_high_impact():
-    from smart_bar_menu import get_high_impact_ingredients
-    return get_high_impact_ingredients()
-
 @app.get("/ingredients")
 def get_all_ingredients():
     alcohols = {"vodka", "gin", "rum", "tequila", "whiskey", "bourbon", "brandy", "scotch", "cognac", "amaretto", "aperol", "campari", "vermouth", "liqueur"}
@@ -49,6 +44,14 @@ def get_all_ingredients():
                     categories["Misc"].append(ing)
 
     return {"categories": categories}
+
+@app.get("/high_impact")
+async def get_high_impact():
+    try:
+        high_impact = get_high_impact_ingredients()
+        return {"high_impact_ingredients": high_impact}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.on_event("startup")
 async def startup_event():
