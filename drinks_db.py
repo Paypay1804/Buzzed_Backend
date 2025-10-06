@@ -34,7 +34,7 @@ DRINKS = [
     {"name": "Dark and Stormy", "ingredients": ["dark rum", "ginger beer", "lime juice"]},
     {"name": "French 75", "ingredients": ["dry gin", "simple syrup", "lemon juice", "champagne"]},
     {"name": "Boulevardier", "ingredients": ["bourbon", "campari", "sweet vermouth"]},
-    {"name": "Gimlet", "ingredients": ["london dry gin", "rose's lime juice"]},
+    {"name": "Gimlet", "ingredients": ["london dry gin", "lime juice"]},
     {"name": "Moscow Mule", "ingredients": ["vodka", "ginger beer", "lime juice"]},
     {"name": "Aperol Spritz", "ingredients": ["aperol", "prosecco", "club soda", "orange juice"]},
     {"name": "Manhattan", "ingredients": ["rye whiskey", "vermouth", "angostura bitters"]},

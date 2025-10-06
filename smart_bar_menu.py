@@ -96,3 +96,12 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
         "high_impact_ingredients": high_impact
 }
 
+def get_high_impact_ingredients():
+    from drinks_db import DRINKS
+    all_missing_ingredients = Counter()
+    for drink in DRINKS:
+        for ing in drink["ingredients"]:
+            all_missing_ingredients[ing] += 1
+    high_impact = [{"ingredient": ing, "unlocks": count} for ing, count in all_missing_ingredients.most_common(5)]
+    return {"high_impact_ingredients": high_impact}
+
