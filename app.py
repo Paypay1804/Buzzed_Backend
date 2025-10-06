@@ -45,13 +45,11 @@ def get_all_ingredients():
 
     return {"categories": categories}
 
+from smart_bar_menu import get_high_impact_ingredients  # move import to top of file
+
 @app.get("/high_impact")
-async def get_high_impact():
-    try:
-        high_impact = get_high_impact_ingredients()
-        return {"high_impact_ingredients": high_impact}
-    except Exception as e:
-        return {"error": str(e)}
+def get_high_impact():
+    return get_high_impact_ingredients()
 
 @app.on_event("startup")
 async def startup_event():
