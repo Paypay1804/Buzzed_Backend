@@ -1,8 +1,9 @@
 # app.py
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List
+from smart_bar_menu import get_high_impact_ingredients
 
 app = FastAPI()
 
@@ -45,11 +46,15 @@ def get_all_ingredients():
 
     return {"categories": categories}
 
-from smart_bar_menu import get_high_impact_ingredients  # move import to top of file
+app = FastAPI()
 
-@app.get("/high_impact")
-def get_high_impact():
-    return get_high_impact_ingredients()
+@app.post("/high_impact")
+async def high_impact(request: Request):
+    data = await request.json()
+    user_ingredients = data.get("ingredients", [])
+    result = get_high_impact_ingredients(user_ingredients)
+    return result
+
 
 @app.on_event("startup")
 async def startup_event():

@@ -2,6 +2,7 @@
 
 from collections import Counter
 from typing import List, Dict, Tuple
+from drinks_db import DRINKS
 
 # --- Liquor Families for Substitution ---
 LIQUOR_FAMILIES = {
@@ -96,14 +97,23 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
         "high_impact_ingredients": high_impact
 }
 
-def get_high_impact_ingredients():
-    all_drinks = DRINKS  # or however you store the master list
-    ingredient_counts = {}
+def get_high_impact_ingredients(user_ingredients):
+    from collections import Counter
 
-    for drink in all_drinks:
-        for ingredient in drink["ingredients"]:
-            ingredient_counts[ingredient] = ingredient_counts.get(ingredient, 0) + 1
+    results = match_drinks(user_ingredients)  # reuse main logic
+    missing_one = results.get("missing_one", [])
+    counts = Counter()
 
-    sorted_ingredients = sorted(ingredient_counts.items(), key=lambda x: x[1], reverse=True)
-    return sorted_ingredients[:5]
+    for drink in missing_one:
+        for ing in drink["missing"]:
+            counts[ing] += 1
+
+    high_impact = [
+        {"ingredient": ing, "unlocks": count}
+        for ing, count in counts.most_common(5)
+    ]
+
+    return {"high_impact_ingredients": high_impact}
+
+
 
