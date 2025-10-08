@@ -49,12 +49,14 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
         for ing in drink["ingredients"]:
             if ing in user_ingredients:
                 continue
+
             elif ing in LIQUOR_SUBSTITUTIONS:
                 found_sub = next((s for s in LIQUOR_SUBSTITUTIONS[ing] if s in user_ingredients), None)
                 if found_sub:
                     subs.append((ing, found_sub))
                     continue
-            missing.append(ing)
+            else:
+                missing.append(ing)
 
         if len(missing) == 0 and not subs:
             can_make.append({
@@ -66,8 +68,9 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
         elif len(missing) == 0 and subs:
             substitute_drinks.append({
                 "name": drink["name"],
-                "substitutions": subs,
+                "substitutions": [list(pair) for pair in subs],
                 "ingredients": drink["ingredients"],
+
                 "glass": drink.get("glass", []),
                 "instructions": drink.get("instructions", [])
             })
