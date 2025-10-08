@@ -50,12 +50,18 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                 continue
 
             elif ing in LIQUOR_SUBSTITUTIONS:
-                found_sub = next((s for s in LIQUOR_SUBSTITUTIONS[ing] if s in user_ingredients), None)
+                valid_subs = [
+                    s for s in LIQUOR_SUBSTITUTIONS[ing]
+                    if s in user_ingredients and any(
+                        s in fam and ing in fam for fam in LIQUOR_FAMILIES.values()
+                    )
+                ]
+                found_sub = valid_subs[0] if valid_subs else None
                 if found_sub:
                     subs.append((ing, found_sub))
                     continue
-            else:
-                missing.append(ing)
+                else:
+                    missing.append(ing)
 
         if len(missing) == 0 and not subs:
             can_make.append({
