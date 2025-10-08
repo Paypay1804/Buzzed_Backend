@@ -121,6 +121,13 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
 
 
     high_impact = [{"ingredient": ing, "unlocks": count} for ing, count in all_missing_ingredients.most_common(5)]
+    import json
+    print("=== DEBUG RESULTS ===")
+    print(json.dumps({
+        "sample_subs": substitute_drinks[:3],
+        "sample_can_make": can_make[:3],
+        "sample_missing": missing_one[:3]
+    }, indent=2))
 
     return {
         "can_make": can_make,
