@@ -25,12 +25,6 @@ LIQUOR_SUBSTITUTIONS = {}
 for family, items in LIQUOR_FAMILIES.items():
     for item in items:
         LIQUOR_SUBSTITUTIONS[item] = [alt for alt in items if alt != item]
-        
-# Reverse substitution lookup
-LIQUOR_SUBSTITUTIONS = {}
-for family, members in LIQUOR_FAMILIES.items():
-    for liquor in members:
-        LIQUOR_SUBSTITUTIONS[liquor] = set(members) - {liquor}
 
 # --- DRINKS database (leave as-is) ---
 from drinks_db import DRINKS  # Split out DRINKS to a separate file optionally (cleaner)
