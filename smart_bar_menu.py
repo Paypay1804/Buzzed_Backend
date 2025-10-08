@@ -76,7 +76,13 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     if not same_family:
                         all_valid = False
                         break
-            if all_valid:
+            if all_valid or any(
+                all(
+                    ing in fam and any(u in fam for u in user_ingredients)
+                    for ing in drink["ingredients"]
+                )
+                for fam in LIQUOR_FAMILIES.values()
+            ):
                 can_make.append({
                     "name": drink["name"],
                     "ingredients": drink["ingredients"],
