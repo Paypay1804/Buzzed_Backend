@@ -21,6 +21,11 @@ LIQUOR_FAMILIES = {
     "lime": ["lime", "lime juice"]
 }
 
+LIQUOR_SUBSTITUTIONS = {}
+for family, items in LIQUOR_FAMILIES.items():
+    for item in items:
+        LIQUOR_SUBSTITUTIONS[item] = [alt for alt in items if alt != item]
+        
 # Reverse substitution lookup
 LIQUOR_SUBSTITUTIONS = {}
 for family, members in LIQUOR_FAMILIES.items():
