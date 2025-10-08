@@ -63,13 +63,26 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                 else:
                     missing.append(ing)
 
+                # --- Only mark as Can Make if every ingredient is owned
+        # or has a same-family substitute actually present ---
         if len(missing) == 0 and not subs:
-            can_make.append({
-                "name": drink["name"],
-                "ingredients": drink["ingredients"],
-                "glass": drink.get("glass", []),
-                "instructions": drink.get("instructions", [])
-            })
+            all_valid = True
+            for ing in drink["ingredients"]:
+                if ing not in user_ingredients:
+                    same_family = any(
+                        ing in fam and any(u in fam for u in user_ingredients)
+                        for fam in LIQUOR_FAMILIES.values()
+                    )
+                    if not same_family:
+                        all_valid = False
+                        break
+            if all_valid:
+                can_make.append({
+                    "name": drink["name"],
+                    "ingredients": drink["ingredients"],
+                    "glass": drink.get("glass", []),
+                    "instructions": drink.get("instructions", [])
+                })
         elif len(missing) == 0 and subs:
             substitute_drinks.append({
                 "name": drink["name"],
