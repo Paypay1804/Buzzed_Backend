@@ -93,7 +93,13 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
             covered = {orig for orig, _ in subs}
             remaining_missing = [ing for ing in missing if ing not in covered]
 
-            if not remaining_missing and len(subs) > 0:
+            owned_or_subbed = sum(
+                1 for ing in drink["ingredients"]
+                if ing in user_ingredients or ing in covered
+            )
+            fully_covered = owned_or_subbed == len(drink["ingredients"])
+
+            if not remaining_missing and fully_covered:
                 substitute_drinks.append({
                     "name": drink["name"],
                     "ingredients": drink["ingredients"],
