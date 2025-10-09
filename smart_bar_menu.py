@@ -9,7 +9,7 @@ LIQUOR_FAMILIES = {
     "whiskey": ["bourbon", "rye whiskey", "irish whiskey", "whiskey"],
     "tequila": ["blanco tequila", "reposado tequila", "tequila"],
     "gin": ["gin", "dry gin", "london dry gin"],
-    "rum": ["white rum", "dark rum", "jamacian rum"],
+    "rum": ["white rum", "dark rum", "jamaican rum"],
     "vermouth": ["sweet vermouth", "dry vermouth", "vermouth", "vermouth rosso"],
     "cognac": ["cognac"],
     "orange liquer": ["triple sec", "cointreau"],
@@ -89,15 +89,52 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     "glass": drink.get("glass", []),
                     "instructions": drink.get("instructions", [])
                 })
-        elif len(missing) == 0 and subs:
-            substitute_drinks.append({
-                "name": drink["name"],
-                "substitutions": [list(pair) for pair in subs],
-                "ingredients": drink["ingredients"],
-
-                "glass": drink.get("glass", []),
-                "instructions": drink.get("instructions", [])
-            })
+        elif subs:
+            remaining_missing = [
+                ing for ing in missing
+                if not any(ing == orig for orig, _ in subs)
+            ]
+            if not remaining_missing:
+                substitute_drinks.append({
+                    "name": drink["name"],
+                    "ingredients": drink["ingredients"],
+                    "substitutions": [list(pair) for pair in subs],
+                    "glass": drink.get("glass", []),
+                    "instructions": drink.get("instructions", [])
+                })
+            else:
+                if len(remaining_missing) == 1:
+                    missing_one.append({
+                        "name": drink["name"],
+                        "missing": remaining_missing,
+                        "ingredients": drink["ingredients"],
+                        "glass": drink.get("glass", []),
+                        "instructions": drink.get("instructions", [])
+                        })
+                elif len(remaining_missing) == 2:
+                    missing_two.append({
+                    "name": drink["name"],
+                        "missing": remaining_missing,
+                        "ingredients": drink["ingredients"],
+                        "glass": drink.get("glass", []),
+                        "instructions": drink.get("instructions", [])
+                    })
+                elif len(remaining_missing) == 3:
+                    missing_three.append({
+                        "name": drink["name"],
+                        "missing": remaining_missing,
+                        "ingredients": drink["ingredients"],
+                        "glass": drink.get("glass", []),
+                        "instructions": drink.get("instructions", [])
+                    })
+                else:
+                    missing_four.append({
+                        "name": drink["name"],
+                        "missing": remaining_missing,
+                        "ingredients": drink["ingredients"],
+                        "glass": drink.get("glass", []),
+                        "instructions": drink.get("instructions", [])
+                    })
         elif len(missing) == 1:
             missing_one.append({
                 "name": drink["name"],
