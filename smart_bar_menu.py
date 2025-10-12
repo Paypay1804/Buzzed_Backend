@@ -57,12 +57,19 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     )
                 ]
                 found_sub = valid_subs[0] if valid_subs else None
+
                 if found_sub:
-                    subs.append((ing, found_sub))
-                    continue
+                    other_ingredients = [x for x in drink["ingredients"] if x != ing]
+                    other_owned = all(o in user_ingredients for o in other_ingredients)
+
+                    if other_owned:
+                        subs.append((ing, found_sub))
+                        continue
+                    else:
+                        missing.append(ing)
                 else:
                     missing.append(ing)
-                    
+           
         true_missing = [
             ing for ing in drink["ingredients"]
             if ing not in user_ingredients
