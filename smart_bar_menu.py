@@ -63,7 +63,7 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                 else:
                     missing.append(ing)
 
-                # --- Only mark as Can Make if every ingredient is owned
+        # --- Only mark as Can Make if every ingredient is owned
         # or has a same-family substitute actually present ---
         if len(missing) == 0 and not subs:
             all_valid = True
@@ -90,8 +90,16 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     "instructions": drink.get("instructions", [])
                 })
         elif subs:
+            # Recalculate from scratch using the full drink list
             covered = {orig for orig, _ in subs}
-            remaining_missing = [ing for ing in missing if ing not in covered]
+            remaining_missing = [
+                ing for ing in drink["ingredients"]
+                if ing not in user_ingredients
+                and not any(ing == orig or (ing in fam and orig in fam)
+                            for orig, _ in subs
+                            for fam in LIQUOR_FAMILIES.values())
+            ]
+            missing_count = len(remaining_missing)
 
             owned_or_subbed = sum(
                 1 for ing in drink["ingredients"]
@@ -108,6 +116,17 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     "instructions": drink.get("instructions", [])
                 })
             else:
+                # Recalculate full missing list, considering family substitutions
+                remaining_missing = [
+                    ing for ing in drink["ingredients"]
+                    if ing not in user_ingredients
+                    and not any(
+                        ing == orig or (ing in fam and orig in fam)
+                        for orig, _ in subs
+                        for fam in LIQUOR_FAMILIES.values()
+                    )
+                ]
+
                 missing_count = len(remaining_missing)
                 target_list = (
                     missing_one if missing_count == 1 else
