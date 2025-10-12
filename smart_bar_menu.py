@@ -32,7 +32,7 @@ from drinks_db import DRINKS  # Split out DRINKS to a separate file optionally (
 # --- Main Matching Function ---
 def match_drinks(user_ingredients: List[str]) -> Dict:
     user_ingredients = [i.strip().lower() for i in user_ingredients]
-    
+    # --- Recalculate true missing ingredients fresh before categorizing ---
     can_make = []
     missing_one = []
     missing_two = []
@@ -62,10 +62,17 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     continue
                 else:
                     missing.append(ing)
-
-        # --- Only mark as Can Make if every ingredient is owned
-        # or has a same-family substitute actually present ---
-        if len(missing) == 0 and not subs:
+                    
+        true_missing = [
+            ing for ing in drink["ingredients"]
+            if ing not in user_ingredients
+            and not any(
+                ing == orig or (ing in fam and orig in fam)
+                for orig, _ in subs
+                for fam in LIQUOR_FAMILIES.values()
+            )
+        ]            
+        if len(true_missing) == 0 and not subs:
             all_valid = True
             for ing in drink["ingredients"]:
                 if ing not in user_ingredients:
@@ -126,8 +133,7 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                         for fam in LIQUOR_FAMILIES.values()
                     )
                 ]
-
-                missing_count = len(remaining_missing)
+                missing_count = len(true_missing)
                 target_list = (
                     missing_one if missing_count == 1 else
                     missing_two if missing_count == 2 else
@@ -141,48 +147,48 @@ def match_drinks(user_ingredients: List[str]) -> Dict:
                     "glass": drink.get("glass", []),
                     "instructions": drink.get("instructions", [])
                 })
-        elif len(missing) == 1:
+        elif len(true_missing) == 1:
             missing_one.append({
                 "name": drink["name"],
-                "missing": missing,
+                "missing": true_missing,
                 "ingredients": drink["ingredients"],
                 "glass": drink.get("glass", []),
                 "instructions": drink.get("instructions", [])
             })
-            for ing in missing:
+            for ing in true_missing:
                 normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
                 all_missing_ingredients[normalized] += 1
-        elif len(missing) == 2:
+        elif len(true_missing) == 2:
             missing_two.append({
                 "name": drink["name"],
-                "missing": missing,
+                "missing": true_missing,
                 "ingredients": drink["ingredients"],
                 "glass": drink.get("glass", []),
                 "instructions": drink.get("instructions", [])
             })
-            for ing in missing:
+            for ing in true_missing:
                 normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
                 all_missing_ingredients[normalized] += 1
-        elif len(missing) == 3:
+        elif len(true_missing) == 3:
             missing_three.append({
                 "name": drink["name"],
-                "missing": missing,
+                "missing": true_missing,
                 "ingredients": drink["ingredients"],
                 "glass": drink.get("glass", []),
                 "instructions": drink.get("instructions", [])
             })
-            for ing in missing:
+            for ing in true_missing:
                 normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
                 all_missing_ingredients[normalized] += 1
-        elif len(missing) == 4:
+        elif len(true_missing) == 4:
             missing_four.append({
                 "name": drink["name"],
-                "missing": missing,
+                "missing": true_missing,
                 "ingredients": drink["ingredients"],
                 "glass": drink.get("glass", []),
                 "instructions": drink.get("instructions", [])
             })
-            for ing in missing:
+            for ing in true_missing:
                 normalized = next((fam for fam, members in LIQUOR_FAMILIES.items() if ing in members), ing)
                 all_missing_ingredients[normalized] += 1
 
